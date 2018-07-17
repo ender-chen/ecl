@@ -500,6 +500,38 @@ void EstimatorInterface::setAuxVelData(uint64_t time_usec, float (&data)[2], flo
 	}
 }
 
+void EstimatorInterface::setGpsYawData(uint64_t time_usec, float yaw) 
+{
+	if (!_initialised || _gpsyaw_buffer_fail) {
+		return;
+	}
+
+	// Allocate the required buffer size if not previously done
+	// Do not retry if allocation has failed previously
+	if (_gpsyaw_buffer.get_length() < _obs_buffer_length) {
+		_gpsyaw_buffer_fail = !_gpsyaw_buffer.allocate(_obs_buffer_length);
+
+		if (_gpsyaw_buffer_fail) {
+			ECL_ERR("EKF gps yaw buffer allocation failed");
+			return;
+		}
+	}
+
+	// limit data rate to prevent data being lost
+	if (time_usec - _time_last_gpsyaw > _min_obs_interval_us) {
+
+		gpsyawSample gpsyaw_sample_new;
+		gpsyaw_sample_new.time_us = time_usec - _params.mag_delay_ms * 1000;
+
+		gpsyaw_sample_new.time_us -= FILTER_UPDATE_PERIOD_MS * 1000 / 2;
+		_time_last_gpsyaw = time_usec;
+
+		gpsyaw_sample_new.yaw = yaw;
+
+		_gpsyaw_buffer.push(gpsyaw_sample_new);
+	}
+}
+
 bool EstimatorInterface::initialise_interface(uint64_t timestamp)
 {
 	// find the maximum time delay the buffers are required to handle

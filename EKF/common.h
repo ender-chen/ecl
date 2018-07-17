@@ -164,6 +164,12 @@ struct auxVelSample {
 	uint64_t time_us;	///< timestamp of the measurement (uSec)
 };
 
+struct gpsyawSample
+{
+	uint64_t time_us;
+	float yaw;
+};
+
 // Integer definitions for vdist_sensor_type
 #define VDIST_SENSOR_BARO  0	///< Use baro height
 #define VDIST_SENSOR_GPS   1	///< Use GPS height

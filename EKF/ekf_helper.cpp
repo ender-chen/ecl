@@ -692,12 +692,13 @@ bool Ekf::resetMagHeading(Vector3f &mag_init)
 	delta_ang_error(1) = scalar * q_error(2);
 	delta_ang_error(2) = scalar * q_error(3);
 
+	ECL_INFO("reset yaw");
 
 	// update the quaternion state estimates and corresponding covariances only if the change in angle has been large
 	if (delta_ang_error.norm() > math::radians(15.0f)) {
 		// update quaternion states
 		_state.quat_nominal = quat_after_reset;
-
+k
 		// record the state change
 		_state_reset_status.quat_change = q_error;
 
@@ -713,12 +714,15 @@ bool Ekf::resetMagHeading(Vector3f &mag_init)
 		if (!_control_status.flags.ev_yaw) {
 			// using error estimate from external vision data
 			angle_err_var_vec(2) = sq(fmaxf(_ev_sample_delayed.angErr, 1.0e-2f));
+			ECL_INFO("!_control_status.flags.ev_yaw");
 
 		} else if (_params.mag_fusion_type <= MAG_FUSE_TYPE_AUTOFW) {
+			ECL_INFO("_params.mag_fusion_type <= MAG_FUSE_TYPE_AUTOFW");
 			// using magnetic heading tuning parameter
 			angle_err_var_vec(2) = sq(fmaxf(_params.mag_heading_noise, 1.0e-2f));
 		}
 
+		ECL_INFO("ev_yaw is %lf", (double)angle_err_var_vec(2));
 		// reset the quaternion covariances using the rotation vector variances
 		initialiseQuatCovariances(angle_err_var_vec);
 

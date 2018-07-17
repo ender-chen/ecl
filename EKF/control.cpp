@@ -137,11 +137,72 @@ void Ekf::controlFusionModes()
 	// Additional data from an external vision pose estimator can be fused.
 	controlExternalVisionFusion();
 
+	controlgpsyawFusion();
+
 	// Additional NE velocity data from an auxiliary sensor can be fused
 	controlAuxVelFusion();
 
 	// check if we are no longer fusing measurements that directly constrain velocity drift
 	update_deadreckoning_status();
+}
+
+void Ekf::controlgpsyawFusion()
+{
+	if (_gpsyaw_data_ready) {
+		if ()
+
+
+
+		if (_params.fusion_mode & MASK_USE_EVYAW && !_control_status.flags.gps_yaw && _control_status.flags.tilt_align) {
+			// don't start using EV data unless daa is arriving frequently
+			if (_time_last_imu - _time_last_gps_yaw < 2 * EV_MAX_INTERVAL) {
+			// reset the yaw angle to the value from the observaton quaternion
+			// get the roll, pitch, yaw estimates from the quaternion states
+				Quatf q_init(_state.quat_nominal);
+				Eulerf euler_init(q_init);
+				euler_init(2) = euler_obs(2);
+
+				// save a copy of the quaternion state for later use in calculating the amount of reset change
+				Quatf quat_before_reset = _state.quat_nominal;
+
+				// calculate initial quaternion states for the ekf
+				_state.quat_nominal = Quatf(euler_init);
+
+				// calculate the amount that the quaternion has changed by
+				_state_reset_status.quat_change = quat_before_reset.inversed() * _state.quat_nominal;
+
+				// add the reset amount to the output observer buffered data
+				// Note q1 *= q2 is equivalent to q1 = q2 * q1
+				for (uint8_t i = 0; i < _output_buffer.get_length(); i++) {
+					_output_buffer[i].quat_nominal *= _state_reset_status.quat_change;
+				}
+
+				// apply the change in attitude quaternion to our newest quaternion estimate
+				// which was already taken out from the output buffer
+				_output_new.quat_nominal = _state_reset_status.quat_change * _output_new.quat_nominal;
+
+				// capture the reset event
+				_state_reset_status.quat_counter++;
+
+				// flag the yaw as aligned
+				_control_status.flags.yaw_align = true;
+
+				// turn on fusion of external vision yaw measurements and disable all magnetoemter fusion
+				_control_status.flags.ev_yaw = true;
+				_control_status.flags.mag_hdg = false;
+				_control_status.flags.mag_3D = false;
+				_control_status.flags.mag_dec = false;
+
+				ECL_INFO("EKF commencing gps yaw fusion");
+			}
+		}
+
+
+		if (_control_status.flags.gps_yaw) {
+			fuseHeading();
+		}
+	} else if (_control_sta)
+
 }
 
 void Ekf::controlExternalVisionFusion()
