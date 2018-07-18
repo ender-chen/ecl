@@ -498,7 +498,13 @@ void Ekf::fuseHeading()
 			float Tbn_0_0 = sq(_ev_sample_delayed.quat(0))+sq(_ev_sample_delayed.quat(1))-sq(_ev_sample_delayed.quat(2))-sq(_ev_sample_delayed.quat(3));
 			measured_hdg = atan2f(Tbn_1_0,Tbn_0_0);
 
+		} else if (_control_status.flags.gps_yaw) {
+		
+			measured_hdg = _gpsyaw_sample_delayed.yaw;
+
+
 		} else {
+
 			// there is no yaw observation
 			return;
 		}
@@ -591,15 +597,16 @@ void Ekf::fuseHeading()
 			float Tbn_1_1 = sq(_ev_sample_delayed.quat(0))-sq(_ev_sample_delayed.quat(1))+sq(_ev_sample_delayed.quat(2))-sq(_ev_sample_delayed.quat(3));
 			measured_hdg = atan2f(Tbn_0_1_neg,Tbn_1_1);
 
+		} else if (_control_status.flags.gps_yaw) {
+			measured_hdg = _gpsyaw_sample_delayed.yaw;
 		} else {
 			// there is no yaw observation
 			return;
-
 		}
 	}
 
 	// Calculate the observation variance
-	if (_control_status.flags.mag_hdg) {
+	if (_control_status.flags.mag_hdg || _control_status.flags.gps_yaw) {
 		// using magnetic heading tuning parameter
 		R_YAW = sq(fmaxf(_params.mag_heading_noise, 1.0e-2f));
 

@@ -164,6 +164,12 @@ struct auxVelSample {
 	uint64_t time_us;	///< timestamp of the measurement (uSec)
 };
 
+struct gpsyawSample
+{
+	uint64_t time_us;
+	float yaw;
+};
+
 // Integer definitions for vdist_sensor_type
 #define VDIST_SENSOR_BARO  0	///< Use baro height
 #define VDIST_SENSOR_GPS   1	///< Use GPS height
@@ -183,6 +189,8 @@ struct auxVelSample {
 #define MASK_USE_EVYAW  (1<<4)		///< set to true to use exernal vision quaternion data for yaw
 #define MASK_USE_DRAG  (1<<5)		///< set to true to use the multi-rotor drag model to estimate wind
 #define MASK_ROTATE_EV  (1<<6)		///< set to true to if the EV observations are in a non NED reference frame and need to be rotated before being used
+#define MASK_USE_GPSYAW (1<<7)      ///< set to true to if we use the gps yaw for use.
+
 
 // Integer definitions for mag_fusion_type
 #define MAG_FUSE_TYPE_AUTO      0	///< The selection of either heading or 3D magnetometer fusion will be automatic
@@ -441,6 +449,7 @@ union filter_control_status_u {
 		uint32_t fuse_aspd   : 1; ///< 19 - true when airspeed measurements are being fused
 		uint32_t gnd_effect  : 1; ///< 20 - true when protection from ground effect induced static pressure rise is active
 		uint32_t rng_stuck   : 1; ///< 21 - true when rng data wasn't ready for more than 10s and new rng values haven't changed enough
+		uint32_t gps_yaw	 : 1; ///< 22 
 	} flags;
 	uint32_t value;
 };

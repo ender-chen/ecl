@@ -581,6 +581,8 @@ bool Ekf::resetMagHeading(Vector3f &mag_init)
 			// the angle of the projection onto the horizontal gives the yaw angle
 			euler321(2) = -atan2f(mag_earth_pred(1), mag_earth_pred(0)) + _mag_declination;
 
+		} else if (_control_status.flags.gps_yaw) {
+			euler321(2) = _gpsyaw_sample_delayed.yaw;
 		} else {
 			// there is no yaw observation
 			return false;
@@ -635,6 +637,8 @@ bool Ekf::resetMagHeading(Vector3f &mag_init)
 			// the angle of the projection onto the horizontal gives the yaw angle
 			euler312(0) = -atan2f(mag_earth_pred(1), mag_earth_pred(0)) + _mag_declination;
 
+		} else if (_control_status.flags.gps_yaw) {
+			euler312(2) = _gpsyaw_sample_delayed.yaw;
 		} else {
 			// there is no yaw observation
 			return false;
@@ -691,7 +695,6 @@ bool Ekf::resetMagHeading(Vector3f &mag_init)
 	delta_ang_error(0) = scalar * q_error(1);
 	delta_ang_error(1) = scalar * q_error(2);
 	delta_ang_error(2) = scalar * q_error(3);
-
 
 	// update the quaternion state estimates and corresponding covariances only if the change in angle has been large
 	if (delta_ang_error.norm() > math::radians(15.0f)) {

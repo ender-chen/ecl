@@ -285,6 +285,7 @@ private:
 	bool _flow_data_ready{false};	///< true when new optical flow data has fallen behind the fusion time horizon and is available to be fused
 	bool _ev_data_ready{false};	///< true when new external vision system data has fallen behind the fusion time horizon and is available to be fused
 	bool _tas_data_ready{false};	///< true when new true airspeed data has fallen behind the fusion time horizon and is available to be fused
+	bool _gpsyaw_data_ready{false};
 
 	uint64_t _time_last_fake_gps{0};	///< last time we faked GPS position measurements to constrain tilt errors during operation without external aiding (uSec)
 	uint64_t _time_ins_deadreckon_start{0};	///< amount of time we have been doing inertial only deadreckoning (uSec)
@@ -583,6 +584,7 @@ private:
 	// control fusion of auxiliary velocity observations
 	void controlAuxVelFusion();
 
+	void controlgpsyawFusion();
 	// control for height sensor timeouts, sensor changes and state resets
 	void controlHeightSensorTimeouts();
 

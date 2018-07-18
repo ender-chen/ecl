@@ -170,6 +170,9 @@ public:
 	// set gps data
 	void setGpsData(uint64_t time_usec, struct gps_message *gps);
 
+	// set gps yaw data
+	void setGpsYawData(uint64_t time_usec, float yaw);
+
 	// set baro data
 	void setBaroData(uint64_t time_usec, float data);
 
@@ -425,6 +428,7 @@ protected:
 	dragSample _drag_sample_delayed{};
 	dragSample _drag_down_sampled{};	// down sampled drag specific force data (filter prediction rate -> observation rate)
 	auxVelSample _auxvel_sample_delayed{};
+	gpsyawSample _gpsyaw_sample_delayed{};
 
 	// Used by the multi-rotor specific drag force fusion
 	uint8_t _drag_sample_count{0};	// number of drag specific force samples assumulated at the filter prediction rate
@@ -498,6 +502,7 @@ protected:
 	RingBuffer<outputVert> _output_vert_buffer;
 	RingBuffer<dragSample> _drag_buffer;
 	RingBuffer<auxVelSample> _auxvel_buffer;
+	RingBuffer<gpsyawSample> _gpsyaw_buffer;
 
 	// observation buffer final allocation failed
 	bool _gps_buffer_fail{false};
@@ -509,6 +514,7 @@ protected:
 	bool _ev_buffer_fail{false};
 	bool _drag_buffer_fail{false};
 	bool _auxvel_buffer_fail{false};
+	bool _gpsyaw_buffer_fail{false};
 
 	uint64_t _time_last_imu{0};	// timestamp of last imu sample in microseconds
 	uint64_t _time_last_gps{0};	// timestamp of last gps measurement in microseconds
@@ -520,6 +526,7 @@ protected:
 	uint64_t _time_last_optflow{0};
 	uint64_t _time_last_gnd_effect_on{0};	//last time the baro ground effect compensation was turned on externally (uSec)
 	uint64_t _time_last_auxvel{0};
+	uint64_t _time_last_gpsyaw{0};
 
 	fault_status_u _fault_status{};
 
