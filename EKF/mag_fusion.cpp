@@ -436,7 +436,7 @@ void Ekf::fuseHeading()
 	float H_YAW[4];
 	Vector3f mag_earth_pred;
 	float measured_hdg;
-
+	// PX4_INFO("fuseHeading, %d", _control_status.flags.gps_yaw);
 	// determine if a 321 or 312 Euler sequence is best
 	if (fabsf(_R_to_earth(2, 0)) < fabsf(_R_to_earth(2, 1))) {
 		// calculate observation jacobian when we are observing the first rotation in a 321 sequence
@@ -501,7 +501,7 @@ void Ekf::fuseHeading()
 		} else if (_control_status.flags.gps_yaw) {
 		
 			measured_hdg = _gpsyaw_sample_delayed.yaw;
-
+			PX4_INFO("measured_hdg is %.2lf", (double)measured_hdg);
 
 		} else {
 
@@ -599,6 +599,7 @@ void Ekf::fuseHeading()
 
 		} else if (_control_status.flags.gps_yaw) {
 			measured_hdg = _gpsyaw_sample_delayed.yaw;
+			PX4_INFO("measured_hdg is %.2lf", (double)measured_hdg);
 		} else {
 			// there is no yaw observation
 			return;

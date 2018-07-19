@@ -152,6 +152,7 @@ void Ekf::controlFusionModes()
 void Ekf::controlgpsyawFusion()
 {
 	if (_gpsyaw_data_ready) {
+		// PX4_INFO("_gpsyaw_data_ready");
 
 
 
@@ -192,7 +193,7 @@ void Ekf::controlgpsyawFusion()
 				_control_status.flags.yaw_align = true;
 
 				// turn on fusion of external vision yaw measurements and disable all magnetoemter fusion
-				_control_status.flags.ev_yaw = true;
+				_control_status.flags.gps_yaw = true;
 				_control_status.flags.mag_hdg = false;
 				_control_status.flags.mag_3D = false;
 				_control_status.flags.mag_dec = false;
@@ -203,6 +204,7 @@ void Ekf::controlgpsyawFusion()
 
 
 		if (_control_status.flags.gps_yaw) {
+			// PX4_INFO("GPS fusion mode is GPSYAW");
 			fuseHeading();
 		}
 	} else {
@@ -1318,7 +1320,7 @@ void Ekf::controlMagFusion()
 
 	// check for new magnetometer data that has fallen behind the fusion time horizon
 	// If we are using external vision data for heading then no magnetometer fusion is used
-	if (!_control_status.flags.ev_yaw && _mag_data_ready) {
+	if (!_control_status.flags.ev_yaw && !_control_status.flags.gps_yaw && _mag_data_ready) {
 
 		// Determine if we should use simple magnetic heading fusion which works better when there are large external disturbances
 		// or the more accurate 3-axis fusion

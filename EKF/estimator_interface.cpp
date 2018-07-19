@@ -527,7 +527,7 @@ void EstimatorInterface::setGpsYawData(uint64_t time_usec, float yaw)
 		_time_last_gpsyaw = time_usec;
 
 		gpsyaw_sample_new.yaw = yaw;
-		ECL_INFO("gpsyaw_sample_new is %.2lf", (double)gpsyaw_sample_new.yaw);
+		// ECL_INFO("gpsyaw_sample_new is %.2lf", (double)gpsyaw_sample_new.yaw);
 		_gpsyaw_buffer.push(gpsyaw_sample_new);
 	}
 }
