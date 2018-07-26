@@ -501,7 +501,7 @@ void Ekf::fuseHeading()
 		} else if (_control_status.flags.gps_yaw) {
 		
 			measured_hdg = _gpsyaw_sample_delayed.yaw;
-			PX4_INFO("measured_hdg is %.2lf", (double)measured_hdg);
+			// PX4_INFO("measured_hdg is %.2lf", (double)measured_hdg);
 
 		} else {
 
@@ -599,7 +599,7 @@ void Ekf::fuseHeading()
 
 		} else if (_control_status.flags.gps_yaw) {
 			measured_hdg = _gpsyaw_sample_delayed.yaw;
-			PX4_INFO("measured_hdg is %.2lf", (double)measured_hdg);
+			// PX4_INFO("measured_hdg is %.2lf", (double)measured_hdg);
 		} else {
 			// there is no yaw observation
 			return;
